@@ -1,0 +1,86 @@
+﻿@using System.Web.Http
+@using System.Web.Http.Controllers
+@using System.Web.Http.Description
+@using System.Collections.ObjectModel
+@model Collection<ApiDescription>
+
+@{
+    ViewBag.Title = "ASP.NET Web API Help Page";
+
+    // Group APIs by controller
+}
+
+<link type="text/css" href="~/Areas/HelpPage/HelpPage.css" rel="stylesheet" />
+<header class="help-page">
+    <div class="content-wrapper">
+        <div class="float-left">
+            <h1>@ViewBag.Title</h1>
+        </div>
+    </div>
+</header>
+<div id="body" class="help-page">
+    <section class="featured">
+        <div class="content-wrapper">
+            <h2>Introduction</h2>
+            <p>
+                Provide a general description of your APIs here.
+            </p>
+        </div>
+    </section>
+    <section class="content-wrapper main-content clear-fix">
+        <div style="border:1px solid black;" class="col-md-12">
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    User:
+                    <input id="userInput" type="text" placeholder="User" />
+                </div>
+
+                <div class="col-md-6">
+                    Pass:
+                    <input id="passInput" type="text" placeholder="Pass" />
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-12 text-center">
+                    <button onclick="doLogin($(userInput).val(), $(passInput).val())">Login</button>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+</div>
+
+<script type="text/javascript">
+    function doLogin(user, pass) {
+
+        $.ajax({
+            url: '/api/BasicAuth/GenerateToken',
+            type: 'POST',
+            data: {
+                'username': user,
+                'password': pass
+            },
+            success: function (result) {
+                alert(result);
+
+                $.ajax({
+                    url: '/api/BearerAuth/ValidateToken',
+                    type: 'GET',
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader('Authorization', 'Bearer ' + result);
+                    },
+                    success: function (tokenResult) {
+                        console.log(tokenResult);
+                    }
+                })
+
+            }
+        })
+    }
+</script>
